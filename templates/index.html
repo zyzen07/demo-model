@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroSimGreen - Intelligent Server Allocation System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-brain"></i> NeuroSimGreen - Intelligent Server Allocation
+            </a>
+            <div class="navbar-nav">
+                <a class="nav-link" href="#dashboard">Dashboard</a>
+                <a class="nav-link" href="#allocation">Task Allocation</a>
+                <a class="nav-link" href="#servers">Server Status</a>
+                <a class="nav-link" href="#ml-model">ML Model</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <!-- Dashboard Section -->
+        <div id="dashboard" class="section">
+            <h2><i class="fas fa-tachometer-alt"></i> Real-Time Data Center Dashboard</h2>
+            
+            <!-- Key Metrics Cards -->
+            <div class="row mb-4">
+                <div class="col-md-2">
+                    <div class="card metric-card bg-primary text-white">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Total Servers</h5>
+                            <h3 id="total-servers">15</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="card metric-card bg-success text-white">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Active Servers</h5>
+                            <h3 id="active-servers">--</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="card metric-card bg-info text-white">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Avg CPU Available</h5>
+                            <h3 id="avg-cpu-available">--%</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="card metric-card bg-warning text-white">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Avg Temperature</h5>
+                            <h3 id="avg-temperature">--°C</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="card metric-card bg-danger text-white">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Carbon Intensity</h5>
+                            <h3 id="carbon-intensity">--</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="card metric-card bg-secondary text-white">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Active Threads</h5>
+                            <h3 id="active-threads">--</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-chart-bar"></i> Server Load Distribution</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="serverLoadChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-thermometer-half"></i> Temperature Monitoring</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="temperatureChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Task Allocation Section -->
+        <div id="allocation" class="section">
+            <h2><i class="fas fa-microchip"></i> Intelligent Task Allocation</h2>
+            
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-plus-circle"></i> Submit New Task</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="taskForm">
+                                <div class="mb-3">
+                                    <label for="taskType" class="form-label">Task Type</label>
+                                    <select class="form-control" id="taskType">
+                                        <option value="Web-Request">Web Request</option>
+                                        <option value="Data-Analysis">Data Analysis</option>
+                                        <option value="ML-Training">ML Training</option>
+                                        <option value="File-Processing">File Processing</option>
+                                        <option value="Database-Query">Database Query</option>
+                                        <option value="Video-Processing">Video Processing</option>
+                                    </select>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="cpuRequirement" class="form-label">CPU Requirement (%)</label>
+                                            <input type="number" class="form-control" id="cpuRequirement" min="1" max="100" value="25">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="ramRequirement" class="form-label">RAM Requirement (GB)</label>
+                                            <input type="number" class="form-control" id="ramRequirement" min="0.1" step="0.1" value="4">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="diskRequirement" class="form-label">Disk Requirement (GB)</label>
+                                            <input type="number" class="form-control" id="diskRequirement" min="0.01" step="0.01" value="1">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="burstTime" class="form-label">Estimated Burst Time (sec)</label>
+                                            <input type="number" class="form-control" id="burstTime" min="0.1" step="0.1" value="120">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="priority" class="form-label">Priority</label>
+                                    <select class="form-control" id="priority">
+                                        <option value="Low">Low</option>
+                                        <option value="Medium" selected>Medium</option>
+                                        <option value="High">High</option>
+                                        <option value="Critical">Critical</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-rocket"></i> Allocate Task
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-brain"></i> Allocation Result</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="allocationResult">
+                                <p class="text-muted">Submit a task to see allocation recommendations...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Server Status Section -->
+        <div id="servers" class="section">
+            <h2><i class="fas fa-server"></i> Server Status & Comparison</h2>
+            
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5><i class="fas fa-list"></i> Server Comparison Table</h5>
+                            <button id="refreshServers" class="btn btn-outline-success btn-sm">
+                                <i class="fas fa-sync-alt"></i> Refresh
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div id="serverComparisonTable">
+                                <p>Loading server status...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ML Model Section -->
+        <div id="ml-model" class="section">
+            <h2><i class="fas fa-brain"></i> Random Forest Model Performance</h2>
+            
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-chart-line"></i> Model Metrics</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="modelPerformance">
+                                <p>Loading model performance...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-weight-hanging"></i> Feature Importance</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="featureImportanceChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Simulation Section -->
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-play-circle"></i> Allocation Simulation</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="numTasks" class="form-label">Number of Tasks</label>
+                                        <input type="number" class="form-control" id="numTasks" value="50" min="10" max="100">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="simulationDuration" class="form-label">Duration (time units)</label>
+                                        <input type="number" class="form-control" id="simulationDuration" value="100" min="50" max="500">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label class="form-label">&nbsp;</label>
+                                        <br>
+                                        <button id="runSimulation" class="btn btn-success">
+                                            <i class="fas fa-play"></i> Run Simulation
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="simulationResults" class="mt-3">
+                                <p>No simulation results yet. Click "Run Simulation" to start.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Modal -->
+    <div class="modal fade" id="loadingModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center">
+                    <div class="spinner-border text-success" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-3">Processing request...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+</html>
