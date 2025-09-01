@@ -21,6 +21,7 @@ body {
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s ease-in-out;
+    will-change: transform;
 }
 
 .metric-card:hover {
@@ -43,6 +44,7 @@ body {
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
+    will-change: auto;
 }
 
 .card-header {
@@ -63,14 +65,64 @@ body {
     border-bottom: 2px solid var(--primary-color);
 }
 
-/* Chart containers */
-canvas {
-    max-height: 300px;
+/* Optimized Chart Containers */
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+    will-change: auto;
 }
 
-/* Table styles */
+.chart-container canvas {
+    max-height: 300px;
+    will-change: auto;
+}
+
+/* Skeleton Loaders for Performance */
+.skeleton-loader {
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+    border-radius: 4px;
+    will-change: background-position;
+}
+
+.skeleton-text {
+    height: 20px;
+    margin-bottom: 8px;
+}
+
+.skeleton-card {
+    height: 120px;
+    width: 100%;
+}
+
+@keyframes loading {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+/* Table Performance Optimizations */
 .table {
     font-size: 0.9rem;
+    will-change: auto;
 }
 
 .table th {
@@ -83,11 +135,18 @@ canvas {
     vertical-align: middle;
 }
 
-/* Button styles */
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    will-change: scroll-position;
+}
+
+/* Button Optimizations */
 .btn {
     border-radius: 25px;
     font-weight: 600;
     transition: all 0.2s ease-in-out;
+    will-change: transform, box-shadow;
 }
 
 .btn:hover {
@@ -95,7 +154,7 @@ canvas {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* Status indicators */
+/* Status Indicators */
 .status-good {
     color: var(--success-color);
 }
@@ -108,22 +167,45 @@ canvas {
     color: var(--danger-color);
 }
 
-/* Loading animations */
-.loading-spinner {
-    border: 3px solid #f3f3f3;
-    border-top: 3px solid var(--primary-color);
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    animation: spin 1s linear infinite;
+/* Progress Bars */
+.progress {
+    border-radius: 10px;
+    overflow: hidden;
 }
 
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+.progress-bar {
+    transition: width 0.3s ease;
+    will-change: width;
 }
 
-/* Responsive design */
+/* Performance Optimizations */
+* {
+    box-sizing: border-box;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    loading: lazy;
+}
+
+/* Reduce motion for better performance */
+@media (prefers-reduced-motion: reduce) {
+    .skeleton-loader,
+    .skeleton,
+    .metric-card,
+    .btn {
+        animation: none;
+        transition: none;
+    }
+    
+    .metric-card:hover,
+    .btn:hover {
+        transform: none;
+    }
+}
+
+/* Mobile Optimizations */
 @media (max-width: 768px) {
     .metric-card h3 {
         font-size: 1.5rem;
@@ -132,9 +214,44 @@ canvas {
     .section h2 {
         font-size: 1.5rem;
     }
+    
+    .chart-container {
+        height: 250px;
+    }
+    
+    .table {
+        font-size: 0.8rem;
+    }
 }
 
-/* Custom scrollbar */
+/* High DPI Display Optimizations */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .card {
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+    
+    .metric-card {
+        box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+    }
+}
+
+/* Loading States */
+.loading-spinner {
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid var(--primary-color);
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+    will-change: transform;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
     width: 8px;
 }
@@ -150,4 +267,88 @@ canvas {
 
 ::-webkit-scrollbar-thumb:hover {
     background: #218838;
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #1a1a1a;
+        color: #ffffff;
+    }
+    
+    .card {
+        background-color: #2d2d2d;
+        border: 1px solid #404040;
+    }
+    
+    .skeleton {
+        background: linear-gradient(90deg, #2d2d2d 25%, #404040 50%, #2d2d2d 75%);
+    }
+}
+
+/* Print Styles */
+@media print {
+    .navbar,
+    .btn,
+    #firebase,
+    .modal {
+        display: none !important;
+    }
+    
+    .section {
+        page-break-inside: avoid;
+    }
+}
+
+/* Performance Monitoring */
+.perf-warning {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background: #ffc107;
+    color: #000;
+    padding: 10px;
+    border-radius: 5px;
+    z-index: 9999;
+    display: none;
+}
+
+/* Accessibility Improvements */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Focus Management */
+.btn:focus,
+.form-control:focus {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+/* Animation Performance */
+.animate-fast {
+    animation-duration: 0.3s;
+}
+
+.animate-normal {
+    animation-duration: 0.5s;
+}
+
+.animate-slow {
+    animation-duration: 1s;
+}
+
+/* GPU Acceleration */
+.gpu-accelerated {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000;
 }
